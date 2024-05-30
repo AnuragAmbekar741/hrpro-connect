@@ -1,7 +1,7 @@
 import React from "react";
 import MainContainer from "@/components/common/MainContainer";
 
-const AllJobs = () => {
+const AllJobs: React.FC = () => {
   return <MainContainer>AllJobs</MainContainer>;
 };
 

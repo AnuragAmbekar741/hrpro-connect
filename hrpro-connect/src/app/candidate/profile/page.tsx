@@ -1,8 +1,7 @@
 import React from "react";
-import MainContainer from "@/components/common/MainContainer";
-
+import ProfileView from "../../../views/candidate/profile/index";
 const Profile = () => {
-  return <MainContainer>Profile</MainContainer>;
+  return <ProfileView />;
 };
 
 export default Profile;

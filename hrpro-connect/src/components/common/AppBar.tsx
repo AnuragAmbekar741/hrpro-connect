@@ -58,7 +58,7 @@ const AppBar: React.FC<AppBarProps> = ({
                   }}
                   className={`${
                     active === item.id ? "text-primary" : "text-textDark"
-                  } text-md font-light mr-12 hover-base`}
+                  } text-sm font-normal mr-12 hover-base`}
                 >
                   {item.label}
                 </button>

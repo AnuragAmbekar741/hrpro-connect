@@ -1,7 +1,7 @@
 import React from "react";
 import MainContainer from "@/components/common/MainContainer";
 
-const Home = () => {
+const Home: React.FC = () => {
   return <MainContainer>Home</MainContainer>;
 };
 

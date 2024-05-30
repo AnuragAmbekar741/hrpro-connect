@@ -17,7 +17,7 @@
   }
 
   .main-container {
-    @apply w-full h-[82.5vh] px-24;
+    @apply w-full flex justify-between items-start h-[82.5vh] px-20 py-5;
   }
 
 }

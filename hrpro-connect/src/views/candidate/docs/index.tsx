@@ -1,7 +1,7 @@
 import React from "react";
 import MainContainer from "@/components/common/MainContainer";
 
-const Docs = () => {
+const Docs: React.FC = () => {
   return <MainContainer>Docs</MainContainer>;
 };
 
