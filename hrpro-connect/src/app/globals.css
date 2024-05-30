@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+    @layer components {
+      .custom-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #e5e7eb;
+        /* Border color */
+        border-radius: 0.25rem;
+        outline: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+  
+      /* Change background color when checked */
+      .custom-checkbox:checked {
+        background-color: #C11613;
+        /* Change background color here */
+      }
+    }
+
 @layer components {
 
   .custom-input {
@@ -11,6 +33,10 @@
   .custom-button {
     @apply text-md font-medium text-white bg-primary px-5 py-2 rounded-lg border-none;
   }
+
+    .custom-button-outlined {
+      @apply text-md font-medium text-primary border border-primary px-5 py-2 rounded-lg hover:bg-primary hover:text-white;
+    }
 
   .hover-base {
     @apply hover:scale-105 transition delay-150;

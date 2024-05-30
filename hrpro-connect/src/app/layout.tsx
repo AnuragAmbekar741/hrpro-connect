@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { Lexend } from "next/font/google";
+import ReduxProvider from "@/redux/ReduxProvider";
 import "./globals.css";
 
 const inter = Lexend({ subsets: ["latin"] });
@@ -17,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-50`}>{children}</body>
+      <body className={`${inter.className} bg-slate-50`}>
+        <ReduxProvider>{children}</ReduxProvider>
+      </body>
     </html>
   );
 }

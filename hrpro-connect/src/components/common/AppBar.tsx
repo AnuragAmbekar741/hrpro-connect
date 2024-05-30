@@ -84,12 +84,6 @@ const AppBar: React.FC<AppBarProps> = ({
           <div className="w-4/5 flex justify-end items-center">
             <button
               onClick={() => handleClick("/auth")}
-              className="text-md font-medium mx-7 text-textDark hover-base"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => handleClick("/auth")}
               className="custom-button hover-base"
             >
               Register
