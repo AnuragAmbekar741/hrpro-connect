@@ -6,6 +6,8 @@ import { CandidateProfileMenu } from "@/constants";
 import RightContainer from "@/components/common/RightContainer";
 import PersonalInfo from "@/components/candidate/profile/PersonalInfo";
 import Skills from "@/components/candidate/profile/Skills";
+import WorkExperience from "@/components/candidate/profile/WorkExperience";
+import EducationHistory from "@/components/candidate/profile/EducationHistory";
 
 const Profile: React.FC = () => {
   const [active, setActive] = useState(CandidateProfileMenu[0].id);
@@ -24,6 +26,8 @@ const Profile: React.FC = () => {
           id="personalInfo"
         />
         <Skills isOpen={active} title="Skills" id="skills" />
+        <WorkExperience isOpen={active} title="Work Experience" id="workExp" />
+        <EducationHistory isOpen={active} title="Education" id="education" />
       </RightContainer>
     </MainContainer>
   );

@@ -25,7 +25,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({
   useEffect(() => reset(), [formReset]);
 
   return (
-    <div className={`${isOpen ? "flex" : "hidden"} w-full`}>
+    <div className={`${isOpen ? "flex h-fit" : "hidden"} w-full`}>
       <TextField
         register={register("name", {
           required: "Please add name of the skill.",

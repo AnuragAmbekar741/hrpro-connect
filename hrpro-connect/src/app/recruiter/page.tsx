@@ -1,8 +1,7 @@
-"use client";
 import React from "react";
 import RoleBasedAuth from "@/components/common/auth/RoleBasedAuth";
 
-const CandidatePage = () => {
+const RecruiterPage = () => {
   return (
     <div>
       <RoleBasedAuth />
@@ -10,4 +9,4 @@ const CandidatePage = () => {
   );
 };
 
-export default CandidatePage;
+export default RecruiterPage;

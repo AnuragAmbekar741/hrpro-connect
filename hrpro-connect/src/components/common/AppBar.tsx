@@ -5,6 +5,9 @@ import logo from "../../../public/hrpro-logo.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BellOutlined, MessageOutlined, UserOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import Settings from "./Settings";
 
 interface MenuItem {
   id: string;
@@ -21,8 +24,10 @@ const AppBar: React.FC<AppBarProps> = ({
   menuItems = [],
 }) => {
   const router = useRouter();
+  const User = useSelector((state: RootState) => state.userLogin);
 
   const [active, setActive] = useState<string>("home");
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   const handleClick = (route: string) => {
     router.push(route);
@@ -74,9 +79,10 @@ const AppBar: React.FC<AppBarProps> = ({
             <button>
               <MessageOutlined className="text-3xl ml-7 mr-24" />
             </button>
-            <button>
-              <UserOutlined className="text-3xl" />
+            <button onClick={() => setSettingsOpen(!settingsOpen)}>
+              <UserOutlined className="text-3xl relative" />
             </button>
+            <Settings isOpen={settingsOpen} />
           </div>
         </>
       ) : (

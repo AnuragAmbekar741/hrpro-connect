@@ -71,13 +71,13 @@ const Dropdown = <T extends FieldValues>({
         className={`${
           collapse
             ? "hidden"
-            : `flex flex-col justify-center items-start w-full h-36 ml-1 mt-2 rounded-lg absolute border p-1 bg-slate-100 shadow-md`
+            : `flex flex-col justify-center items-start w-full h-36 ml-1 mt-2 rounded-lg overflow-y-scroll absolute border px-1 bg-slate-100 shadow-md`
         }`}
       >
         {options &&
           options.map((option, i) => (
             <div
-              className="w-full text-slate-500 text-md px-3 py-1 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
+              className="w-full flex items-center text-slate-500 text-md px-3 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
               onClick={() => handleOptionClick(option)}
               key={i}
             >

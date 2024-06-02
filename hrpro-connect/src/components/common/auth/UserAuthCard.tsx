@@ -3,10 +3,10 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 
 interface UserAuthCardProps {
-  role: "Candidate" | "Recruiter";
-  selectedRole: "Candidate" | "Recruiter";
+  role: "candidate" | "recruiter";
+  selectedRole: "candidate" | "recruiter";
   setSelectedRole: React.Dispatch<
-    React.SetStateAction<"Candidate" | "Recruiter">
+    React.SetStateAction<"candidate" | "recruiter">
   >;
   image: string | StaticImageData;
   alt: string;
@@ -20,10 +20,11 @@ const UserAuthCard: React.FC<UserAuthCardProps> = ({
   image,
   alt,
 }) => {
+  const title = role.toUpperCase();
   return (
     <div
       onClick={(e) => setSelectedRole(role)}
-      className={`w-40 px-2 py-4 flex flex-col items-center gap-2  mx-2 rounded-lg hover:shadow-sm border ${
+      className={`w-40 px-2 py-4 flex flex-col items-center gap-5  mx-2 rounded-lg hover:shadow-sm border ${
         selectedRole === role ? "border-primary" : ""
       }`}
     >
@@ -33,7 +34,7 @@ const UserAuthCard: React.FC<UserAuthCardProps> = ({
           selectedRole === role ? "text-primary" : "text-textLight"
         } `}
       >
-        {role}
+        {title}
       </h3>
     </div>
   );

@@ -7,14 +7,23 @@ import TextField from "../base/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { GoogleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { signupWithFirebase, resetUser } from "@/redux/slice/userSignupSlice";
-import { loginWithFirebase } from "@/redux/slice/userLoginSlice";
+import {
+  signupWithFirebase,
+  resetUserSignup,
+} from "@/redux/slice/userSignupSlice";
+import {
+  loginWithFirebase,
+  loginWithGoogle,
+  resetUserLogin,
+} from "@/redux/slice/userLoginSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { auth } from "../../../firebase/index";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 interface UserAuthFormProps {
-  selectedRole: "Candidate" | "Recruiter";
+  selectedRole: "candidate" | "recruiter";
   setFormStep: React.Dispatch<React.SetStateAction<"role" | "auth">>;
 }
 
@@ -23,48 +32,80 @@ interface UserAuthFormState {
   password: string;
 }
 
+interface UserCredentials {
+  email: string;
+  password: string;
+  role: string;
+}
+
 const UserAuthForm: React.FC<UserAuthFormProps> = ({
   selectedRole,
   setFormStep,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const UserAuthStatus = useSelector((state: RootState) => state.auth);
-  const router = useRouter();
   const [authType, setAuthType] = useState<"login" | "signup">("signup");
+  const [forgotPassword, setForgotPassword] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const UserAuthStatus = useSelector((state: RootState) =>
+    authType === "login" ? state.userLogin : state.userSignup
+  );
+  const router = useRouter();
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<UserAuthFormState>();
 
-  const signup = async (userCred: { email: string; password: string }) => {
+  const signup = async (userCred: UserCredentials) => {
     await dispatch(signupWithFirebase(userCred));
   };
-  const login = async (userCred: { email: string; password: string }) => {
+
+  const login = async (userCred: UserCredentials) => {
     await dispatch(loginWithFirebase(userCred));
   };
 
+  const handleGoogleAuth = async (role: string) => {
+    await dispatch(loginWithGoogle({ role }));
+  };
+
+  const handleResetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset email sent!");
+      setForgotPassword(false);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   const onSubmit: SubmitHandler<UserAuthFormState> = (formData) => {
-    if (authType === "login") login(formData);
-    else signup(formData);
+    const userCredentials = { ...formData, role: selectedRole };
+    if (forgotPassword) return handleResetPassword(formData.email);
+    if (authType === "login") return login(userCredentials);
+    else return signup(userCredentials);
   };
 
   useEffect(() => {
     if (UserAuthStatus.Error) {
-      dispatch(resetUser());
+      dispatch(resetUserSignup());
+      dispatch(resetUserLogin());
       toast.error(UserAuthStatus.Error);
     }
     if (UserAuthStatus.User) {
       console.log(UserAuthStatus.User);
+      if (authType === "login") {
+        toast.success("Login successfull!");
+        router.push("/" + selectedRole);
+      }
 
-      toast.success(
-        authType === "login" ? "Login successfull!" : "Sign up successfull!"
-      );
+      toast.success("Sign up successfull!");
     }
   }, [UserAuthStatus]);
 
   useEffect(() => {
-    dispatch(resetUser());
+    dispatch(resetUserSignup());
+    dispatch(resetUserLogin());
+    reset();
   }, [authType]);
 
   return (
@@ -76,19 +117,28 @@ const UserAuthForm: React.FC<UserAuthFormProps> = ({
             <LoadingOutlined className="text-white text-5xl" />
           </div>
         )}
-        <div className="flex items-center">
-          <Image
-            src={selectedRole === "Candidate" ? candidateImg : recruiterImg}
-            width={60}
-            height={50}
-            alt="user profile image"
-            className="rounded-full border-2 border-slate-400 p-1 cursor-pointer"
-            onClick={() => setFormStep("role")}
-          />
-          <h3 className="text-3xl text-left font-normal mx-4">
-            {authType === "login" ? "Welcome back 😇" : "Let's get started 🚀"}
-          </h3>
-        </div>
+        {!forgotPassword && (
+          <div className="flex items-center">
+            <Image
+              src={selectedRole === "candidate" ? candidateImg : recruiterImg}
+              width={60}
+              height={50}
+              alt="user profile image"
+              className="rounded-full border-2 border-slate-400 p-1 cursor-pointer"
+              onClick={() => setFormStep("role")}
+            />
+            <h3 className="text-3xl text-left font-normal mx-4">
+              {authType === "login"
+                ? "Welcome back 😇"
+                : "Let's get started 🚀"}
+            </h3>
+          </div>
+        )}
+        {forgotPassword && (
+          <div className="flex items-center">
+            <h3 className="text-3xl text-left font-normal">Reset Password</h3>
+          </div>
+        )}
         <div className="grid gap-2">
           <TextField
             label="Email"
@@ -103,59 +153,84 @@ const UserAuthForm: React.FC<UserAuthFormProps> = ({
             error={!!errors.email}
             errorMsg={errors.email?.message}
           />
-          <TextField
-            label="Password"
-            type="password"
-            placeholder="Enter your email"
-            register={register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters long",
-              },
-              validate: {
-                uppercase: (value) =>
-                  /[A-Z]/.test(value) ||
-                  "Password must contain at least one uppercase letter",
-                number: (value) =>
-                  /\d/.test(value) ||
-                  "Password must contain at least one number",
-                specialChar: (value) =>
-                  /[!@#$%^&*]/.test(value) ||
-                  "Password must contain at least one special character",
-              },
-            })}
-            error={!!errors.password}
-            errorMsg={errors.password?.message}
-          />
+          {!forgotPassword && (
+            <TextField
+              label="Password"
+              type="password"
+              placeholder="Enter your email"
+              register={register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters long",
+                },
+                validate: {
+                  uppercase: (value) =>
+                    /[A-Z]/.test(value) ||
+                    "Password must contain at least one uppercase letter",
+                  number: (value) =>
+                    /\d/.test(value) ||
+                    "Password must contain at least one number",
+                  specialChar: (value) =>
+                    /[!@#$%^&*]/.test(value) ||
+                    "Password must contain at least one special character",
+                },
+              })}
+              error={!!errors.password}
+              errorMsg={errors.password?.message}
+            />
+          )}
         </div>
-        <div className="flex justify-between px-1">
-          <div className="flex items-center">
-            <input type="checkbox" className="custom-checkbox" />
-            <p className="text-sm font-light text-primary mx-1">Remeber me?</p>
+        {!forgotPassword && authType !== "signup" && (
+          <div className="flex justify-between px-1">
+            <div className="flex items-center">
+              <input type="checkbox" className="custom-checkbox" />
+              <p className="text-sm font-light text-primary mx-1">
+                Remeber me?
+              </p>
+            </div>
+            <p
+              onClick={() => setForgotPassword(true)}
+              className="text-sm font-light text-textLight mx-1 hover:text-primary cursor-pointer"
+            >
+              Forgot password?
+            </p>
           </div>
-          <p className="text-sm font-light text-textLight mx-1">
-            Forgot password?
-          </p>
-        </div>
-        <div className="grid gap-4">
+        )}
+
+        {!forgotPassword && (
+          <div className="grid gap-4">
+            <button type="submit" className="custom-button">
+              {authType === "login" ? "Login" : "Sign up"}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleGoogleAuth(selectedRole)}
+              className="custom-button-outlined"
+            >
+              Continue with
+              <GoogleOutlined className="text-xl ml-1" />
+              oogle
+            </button>
+          </div>
+        )}
+        {forgotPassword && (
           <button type="submit" className="custom-button">
-            {authType === "login" ? "Login" : "Sign up"}
+            Reset Password
           </button>
-          <button className="custom-button-outlined">
-            Continue with
-            <GoogleOutlined className="text-xl ml-1" />
-            oogle
-          </button>
-        </div>
-        <p
-          onClick={() => setAuthType(authType === "login" ? "signup" : "login")}
-          className="text-sm font-light text-textLight text-center cursor-pointer hover-base"
-        >
-          {authType === "login"
-            ? "New user? Create an account?"
-            : "Already a user? Login"}
-        </p>
+        )}
+        {!forgotPassword && (
+          <p
+            onClick={() =>
+              setAuthType(authType === "login" ? "signup" : "login")
+            }
+            className="text-sm font-light text-textLight text-center cursor-pointer hover-base"
+          >
+            {authType === "login"
+              ? "New user? Create an account?"
+              : "Already a user? Login"}
+          </p>
+        )}
       </div>
     </form>
   );

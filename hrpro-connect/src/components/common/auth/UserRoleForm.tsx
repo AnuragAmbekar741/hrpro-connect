@@ -5,9 +5,9 @@ import candidateImg from "../../../assets/candidate.png";
 import recruiterImg from "../../../assets/recruiter.png";
 
 interface UserRoleFormProps {
-  selectedRole: "Candidate" | "Recruiter";
+  selectedRole: "candidate" | "recruiter";
   setSelectedRole: React.Dispatch<
-    React.SetStateAction<"Candidate" | "Recruiter">
+    React.SetStateAction<"candidate" | "recruiter">
   >;
   setFormStep: React.Dispatch<React.SetStateAction<"role" | "auth">>;
 }
@@ -23,7 +23,7 @@ const UserRoleForm: React.FC<UserRoleFormProps> = ({
       <h3 className="text-3xl text-left ml-3 font-normal">Who are you? 🤔</h3>
       <div className="flex justify-between">
         <UserAuthCard
-          role="Candidate"
+          role="candidate"
           image={candidateImg}
           alt=""
           onClick={handleClick}
@@ -31,7 +31,7 @@ const UserRoleForm: React.FC<UserRoleFormProps> = ({
           setSelectedRole={setSelectedRole}
         />
         <UserAuthCard
-          role="Recruiter"
+          role="recruiter"
           image={recruiterImg}
           alt=""
           onClick={handleClick}

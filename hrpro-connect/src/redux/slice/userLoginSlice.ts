@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth } from "../../firebase/index";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword,signOut,signInWithPopup, GoogleAuthProvider,sendPasswordResetEmail } from "firebase/auth";
+
+
+
 
 interface User {
     email: string | null;
     accessToken: string | null;
     uid: string | null;
+    role:string | null
 }
 
 interface InitialState {
@@ -21,9 +25,9 @@ const initialState: InitialState = {
 };
 
 
-export const loginWithFirebase = createAsyncThunk<User, { email: string, password: string }>(
-    'user/signupWithFirebase',
-    async ({ email, password }, thunkAPI) => {
+export const loginWithFirebase = createAsyncThunk<User, { email: string, password: string,role:string }>(
+    'user/loginWithFirebase',
+    async ({ email, password, role }, thunkAPI) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             if (userCredentials.user) {
@@ -32,7 +36,8 @@ export const loginWithFirebase = createAsyncThunk<User, { email: string, passwor
                 return {
                     email: userCredentials.user.email,
                     accessToken: accessToken,
-                    uid: userCredentials.user.uid
+                    uid: userCredentials.user.uid,
+                    role:role
                 };
             } else {
                 return thunkAPI.rejectWithValue("User credentials are not available");
@@ -43,11 +48,42 @@ export const loginWithFirebase = createAsyncThunk<User, { email: string, passwor
     }
 );
 
+export const loginWithGoogle = createAsyncThunk<User,{role:string}>(
+  'user/signInWithGoogle',
+  async ({role}, thunkAPI) => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const accessToken = await userCredential.user.getIdToken();
+      return {
+        email: userCredential.user.email,
+        accessToken: accessToken,
+        uid:userCredential.user.uid,
+        role:role
+      };
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const signOutFirebase = createAsyncThunk(
+    'user/signoutFirebase',
+    async(_,thunkAPI)=>{
+        try{
+            await signOut(auth)
+        }
+        catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
+        }   
+    }
+)
+
 const userLoginSlice = createSlice({
     name: "user-login",
     initialState,
     reducers: {
-        resetUser: (state) => {
+        resetUserLogin: (state) => {
             state.User = null;
             state.Loading = false;
             state.Error = null;
@@ -67,9 +103,34 @@ const userLoginSlice = createSlice({
             .addCase(loginWithFirebase.rejected, (state, action) => {
                 state.Loading = false;
                 state.Error = action.payload as string;
-            });
-    }
+            })
+            .addCase(signOutFirebase.pending, (state) => {
+                state.Loading = true;
+                state.Error = null;
+            })
+            .addCase(signOutFirebase.fulfilled, (state) => {
+                state.Loading = false;
+                state.User = null;
+            })
+            .addCase(signOutFirebase.rejected, (state, action) => {
+                state.Loading = false;
+                state.Error = action.payload as string;
+            })
+            .addCase(loginWithGoogle.pending, (state) => {
+                state.Loading = true;
+                state.Error = null;
+            })
+            .addCase(loginWithGoogle.fulfilled, (state, action) => {
+              state.Loading = false;
+              state.User = action.payload;
+            })
+            .addCase(loginWithGoogle.rejected, (state, action) => {
+              state.Loading = false;
+              state.Error = action.payload as string;
+            })
+            
+        }
 });
 
-export const { resetUser } = userLoginSlice.actions;
+export const { resetUserLogin } = userLoginSlice.actions;
 export default userLoginSlice.reducer;

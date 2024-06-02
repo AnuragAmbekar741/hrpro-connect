@@ -6,6 +6,7 @@ interface User {
     email: string | null;
     accessToken: string | null;
     uid: string | null;
+    role:string|null;
 }
 
 interface InitialState {
@@ -21,9 +22,9 @@ const initialState: InitialState = {
 };
 
 
-export const signupWithFirebase = createAsyncThunk<User, { email: string, password: string }>(
+export const signupWithFirebase = createAsyncThunk<User, { email: string, password: string,role:string }>(
     'user/signupWithFirebase',
-    async ({ email, password }, thunkAPI) => {
+    async ({ email, password,role }, thunkAPI) => {
         try {
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
             if (userCredentials.user) {
@@ -32,7 +33,8 @@ export const signupWithFirebase = createAsyncThunk<User, { email: string, passwo
                 return {
                     email: userCredentials.user.email,
                     accessToken: accessToken,
-                    uid: userCredentials.user.uid
+                    uid: userCredentials.user.uid,
+                    role : role
                 };
             } else {
                 return thunkAPI.rejectWithValue("User credentials are not available");
@@ -47,7 +49,7 @@ const userSignupSlice = createSlice({
     name: "user-signup",
     initialState,
     reducers: {
-        resetUser: (state) => {
+        resetUserSignup: (state) => {
             state.User = null;
             state.Loading = false;
             state.Error = null;
@@ -71,5 +73,5 @@ const userSignupSlice = createSlice({
     }
 });
 
-export const { resetUser } = userSignupSlice.actions;
+export const { resetUserSignup } = userSignupSlice.actions;
 export default userSignupSlice.reducer;

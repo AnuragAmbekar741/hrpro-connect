@@ -20,6 +20,14 @@ export const Pronouns = [
     {id:"others",label:"others"},
 ]
 
+export const EmploymentType = [
+    {id:"fulltime",label:"Full time"},
+    {id:"parttime",label:"Part time"},
+    {id:"contract",label:"Contract"},
+    {id:"temporary",label:"Temporary"},
+    {id:"freelance",label:"Freelance"},
+]
+
 
 export const CountryWithCode = [
     {
