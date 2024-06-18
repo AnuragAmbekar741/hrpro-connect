@@ -23,6 +23,9 @@ interface DropDownProps<T extends FieldValues> {
   register: UseFormRegisterReturn;
   setValue: UseFormSetValue<T>;
   name: Path<T>;
+  error?: boolean;
+  errorMsg?: string;
+  setOption?: (val: string) => void;
 }
 
 const Dropdown = <T extends FieldValues>({
@@ -35,12 +38,16 @@ const Dropdown = <T extends FieldValues>({
   register,
   setValue,
   name,
+  error,
+  errorMsg,
+  setOption,
 }: DropDownProps<T>) => {
   const [collapse, setCollapse] = useState<boolean>(true);
   const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleOptionClick = (option: Option) => {
     const label = getOptionLabel(option);
+    if (setOption) setOption(label);
     setSelectedOption(label);
     setValue(name, label as PathValue<T, Path<T>>); // Update the form value
     setCollapse(true); // Collapse the dropdown after selection
@@ -67,17 +74,18 @@ const Dropdown = <T extends FieldValues>({
           onClick={() => setCollapse(!collapse)}
         />
       </div>
+      {error && <p className="p-1 text-sm text-red-600">*{errorMsg}</p>}
       <div
         className={`${
           collapse
             ? "hidden"
-            : `flex flex-col justify-center items-start w-full h-36 ml-1 mt-2 rounded-lg overflow-y-scroll absolute border px-1 bg-slate-100 shadow-md`
+            : `grid w-full ml-1 mt-2 rounded-lg h-40 overflow-y-auto absolute border px-1 bg-slate-100 shadow-md`
         }`}
       >
         {options &&
           options.map((option, i) => (
             <div
-              className="w-full flex items-center text-slate-500 text-md px-3 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
+              className="w-full flex items-center text-slate-500 text-md py-1 px-3 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
               onClick={() => handleOptionClick(option)}
               key={i}
             >

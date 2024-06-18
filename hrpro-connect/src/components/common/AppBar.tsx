@@ -30,7 +30,8 @@ const AppBar: React.FC<AppBarProps> = ({
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   const handleClick = (route: string) => {
-    router.push(route);
+    const ROUTE = `/candidate/${route}`;
+    router.push(ROUTE);
   };
 
   return (
@@ -58,7 +59,7 @@ const AppBar: React.FC<AppBarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => {
-                    handleClick("/candidate/" + item.id);
+                    handleClick(item.id);
                     setActive(item.id);
                   }}
                   className={`${
@@ -89,7 +90,7 @@ const AppBar: React.FC<AppBarProps> = ({
         <>
           <div className="w-4/5 flex justify-end items-center">
             <button
-              onClick={() => handleClick("/auth")}
+              onClick={() => router.push("/auth")}
               className="custom-button hover-base"
             >
               Register

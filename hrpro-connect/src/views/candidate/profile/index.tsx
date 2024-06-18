@@ -20,6 +20,14 @@ const Profile: React.FC = () => {
         menuItems={CandidateProfileMenu}
       />
       <RightContainer>
+        {/* <div className="flex justify-end px-1">
+          <button
+            disabled
+            className="text-md text-primary disabled:text-textLight"
+          >
+            Preview
+          </button>
+        </div> */}
         <PersonalInfo
           isOpen={active}
           title="Personal Information"

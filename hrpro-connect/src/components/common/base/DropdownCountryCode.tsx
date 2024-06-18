@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DownOutlined } from "@ant-design/icons";
 import {
   UseFormRegisterReturn,
@@ -22,6 +22,8 @@ interface DropDownProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   name: Path<T>;
   code?: boolean;
+  error?: boolean;
+  errorMsg?: string;
 }
 
 const DropdownCountryCode = <T extends FieldValues>({
@@ -35,13 +37,15 @@ const DropdownCountryCode = <T extends FieldValues>({
   setValue,
   name,
   code,
+  error,
+  errorMsg,
 }: DropDownProps<T>) => {
   const [collapse, setCollapse] = useState<boolean>(true);
   const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleOptionClick = (option: Option) => {
     if (code) {
-      setSelectedOption(option.dial_code);
+      setSelectedOption(option.dial_code + " " + option.emoji);
       setValue(name, option.dial_code as PathValue<T, Path<T>>); // Update the form value with dial_code
     } else {
       const label = getOptionCountry(option);
@@ -52,9 +56,15 @@ const DropdownCountryCode = <T extends FieldValues>({
     setCollapse(true); // Collapse the dropdown after selection
   };
 
-  const sortedOption = options
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .reverse();
+  const [search, setSearch] = useState<string>("");
+  const [filter, setFilter] = useState<Option[]>([]);
+
+  useEffect(() => {
+    const FilteredOptions = options.filter((option) =>
+      option.name.includes(search)
+    );
+    setFilter(FilteredOptions);
+  }, [search]);
 
   return (
     <div className={`${width} ${className} relative`}>
@@ -77,17 +87,24 @@ const DropdownCountryCode = <T extends FieldValues>({
           onClick={() => setCollapse(!collapse)}
         />
       </div>
+      {error && <p className="p-1 text-sm text-red-600">*{errorMsg}</p>}
       <div
         className={`${
           collapse
             ? "hidden"
-            : `flex flex-col justify-center items-start w-full h-36 overflow-y-scroll ml-1 pt-7 rounded-lg absolute border p-1 bg-slate-100 shadow-md`
+            : `grid w-full rounded-lg border p-1 bg-slate-100 shadow-md overflow-y-auto h-40 absolute`
         }`}
       >
+        <input
+          className="px-2 py-1 w-full border focus:outline-slate-200 text-sm placeholder:text-sm"
+          type="text"
+          placeholder="@Search"
+          onChange={(e) => setSearch(e.target.value)}
+        />
         {options &&
-          sortedOption.map((option, i) => (
+          filter.map((option, i) => (
             <div
-              className="w-full text-slate-500 text-md px-3 py-1 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
+              className="w-full text-slate-500 text-sm px-3 py-1 hover:text-textDark cursor-pointer hover:shadow-sm hover:border hover:border-slate-100"
               onClick={() => handleOptionClick(option)}
               key={i}
             >

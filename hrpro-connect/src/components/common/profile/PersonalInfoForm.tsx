@@ -1,11 +1,12 @@
 // components/PersonalInfoForm.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 import TextField from "@/components/common/base/TextField";
 import TextArea from "@/components/common/base/TextArea";
 import Dropdown from "@/components/common/base/Dropdown";
 import DropdownCountryCode from "@/components/common/base/DropdownCountryCode";
 import { CountryWithCode, Pronouns } from "@/constants";
+import { CountryWithCities as data } from "@/constants";
 
 export interface PersonalInfoValues extends FieldValues {
   firstName: string;
@@ -25,14 +26,49 @@ interface PersonalInfoFormProps extends UseFormReturn<PersonalInfoValues> {
   isOpen: boolean;
 }
 
+interface CountryData {
+  [key: string]: string[];
+}
+
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   register,
   setValue,
+  resetField,
   formState: { errors },
   isOpen,
 }) => {
+  const countries = Object.keys(data).map((country, index) => ({
+    id: index.toString(),
+    label: country,
+  }));
+
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [cities, setCities] = useState<{ id: string; label: string }[]>([]);
+
   const getOptionLabel = (option: any): string => option.label;
-  const getOptionCountry = (option: any): string => option.name;
+
+  const getOptionCountryCode = (option: any): string =>
+    `${option.emoji} ${option.name}`;
+
+  const getOptionCountry = (option: any): string => {
+    return option.label;
+  };
+
+  function getCitiesByCountry(country: string): string[] {
+    return data[country] || [];
+  }
+
+  useEffect(() => {
+    const citieAre = getCitiesByCountry(selectedCountry);
+    console.log(citieAre);
+    if (cities) {
+      const c = citieAre.map((ele, i) => {
+        return { id: i.toString(), label: ele };
+      });
+      resetField("city");
+      setCities(c);
+    }
+  }, [selectedCountry]);
 
   return (
     <div className={`${isOpen ? "grid" : "hidden"} w-full`}>
@@ -68,18 +104,22 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       </div>
       <div className="flex justify-start py-3">
         <DropdownCountryCode
-          width="w-1/5"
+          width="w-[22%]"
           options={CountryWithCode}
-          getOptionCountry={getOptionCountry}
+          getOptionCountry={getOptionCountryCode}
           label="Code"
           placeholder="Code"
-          register={register("countryCode")}
+          register={register("countryCode", {
+            required: "Country code is required.",
+          })}
           setValue={setValue}
           name="countryCode"
           code
+          error={!!errors.countryCode}
+          errorMsg={errors.countryCode?.message}
         />
         <TextField
-          width="w-2/5"
+          width="w-[43%]"
           placeholder="Phone number"
           label="Phone number"
           register={register("phoneNumber", {
@@ -90,7 +130,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           className="mx-2"
         />
         <TextField
-          width="w-2/5"
+          width="w-[35%]"
           placeholder="Email"
           label="Email"
           register={register("email", {
@@ -112,7 +152,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         />
       </div>
       <div className="flex py-3">
-        <TextField
+        {/* <TextField
           placeholder="Country/Region"
           label="Country/Region"
           register={register("countryOrRegion", {
@@ -120,8 +160,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           })}
           error={!!errors.countryOrRegion}
           errorMsg={errors.countryOrRegion?.message}
-        />
-        <TextField
+        /> */}
+        {/* <TextField
           placeholder="City"
           label="City"
           className="mx-2"
@@ -130,7 +170,34 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           })}
           error={!!errors.city}
           errorMsg={errors.city?.message}
+        /> */}
+        <Dropdown
+          label="Country"
+          options={countries}
+          getOptionLabel={getOptionCountry}
+          register={register("countryOrRegion", {
+            required: "Country is required.",
+          })}
+          setOption={setSelectedCountry}
+          setValue={setValue}
+          name="country"
+          placeholder="Select a country"
+          error={!!errors.countryOrRegion}
+          errorMsg={errors.countryOrRegion?.message}
         />
+        <Dropdown
+          label="City"
+          options={cities ? cities : []}
+          getOptionLabel={getOptionLabel}
+          register={register("city")}
+          setValue={setValue}
+          name="city"
+          placeholder="Select a city"
+          error={!!errors.city}
+          errorMsg={errors.city?.message}
+          className="mx-2"
+        />
+
         <TextField
           placeholder="Postal Code"
           label="Postal code"

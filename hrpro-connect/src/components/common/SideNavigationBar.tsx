@@ -15,7 +15,7 @@ const SideNavigationBar: React.FC<SideNavigationBarProps> = ({
   setActive,
 }) => {
   return (
-    <div className="w-[22.5%] flex flex-col justify-center items-start shadow-md rounded-md border border-slate-100 mx-5">
+    <div className="w-[25%] flex flex-col justify-center items-start shadow-md rounded-md border border-slate-100 mx-5">
       {menuItems &&
         menuItems.map((item) => (
           <div

@@ -14,8 +14,6 @@ const Settings: React.FC<SettingsProps> = ({ isOpen }) => {
   const router = useRouter();
   const handleLogout = async () => {
     await dispatch(signOutFirebase());
-    dispatch(resetUserLogin());
-    router.push("/auth");
   };
   return (
     <div

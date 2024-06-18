@@ -10,7 +10,9 @@ interface WorkExpFormProps {}
 
 export interface WorkExpFormValues {
   companyName: string;
+  designation: string;
   industry: string;
+  companyUrl: string;
   employmentType: string;
   country: string;
   startDate: string;
@@ -64,34 +66,49 @@ const WorkExpForm: React.FC = () => {
               errorMsg={errors.companyName?.message}
             />
             <TextField
+              placeholder="Designation"
+              label="Designation"
+              register={register("designation", {
+                required: "Company name is required",
+              })}
+              className="mx-2"
+              error={!!errors.designation}
+              errorMsg={errors.designation?.message}
+            />
+            <TextField
               placeholder="Industry"
               label="Industry"
-              className="mx-2"
               register={register("industry", {
                 required: "Industry is required",
               })}
               error={!!errors.industry}
               errorMsg={errors.industry?.message}
             />
-            {/* <TextField
-              placeholder="Employment type"
-              label="Employment type"
-              register={register("employmentType", {
-                required: "Employment type is required",
-              })}
-              error={!!errors.employmentType}
-              errorMsg={errors.employmentType?.message}
-            /> */}
+          </div>
+          <div className="flex py-1">
             <Dropdown
               label="Employment type"
               register={register("employmentType", {
                 required: "Employment type is required",
               })}
+              className="w-1/3"
               getOptionLabel={getOptionLabel}
               placeholder="Employment type"
               options={EmploymentType}
               setValue={setValue}
               name="employmentType"
+              error={!!errors.employmentType}
+              errorMsg={errors.employmentType?.message}
+            />
+            <TextField
+              placeholder="Company url"
+              label="Company url"
+              className="ml-2"
+              register={register("industry", {
+                required: "Industry is required",
+              })}
+              error={!!errors.industry}
+              errorMsg={errors.industry?.message}
             />
           </div>
           <div className="flex py-1">
