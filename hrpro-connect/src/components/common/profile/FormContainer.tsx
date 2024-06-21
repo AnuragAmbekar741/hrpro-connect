@@ -35,7 +35,6 @@ const FormContainer = <T extends FieldValues>({
   addSkillBtn,
 }: FormContainerProps<T>) => {
   const methods = useForm<T>();
-
   return (
     <div className="w-full py-3 px-5 rounded-md border">
       <form onSubmit={methods.handleSubmit(onSubmit)}>
