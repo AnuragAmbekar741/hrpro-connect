@@ -18,7 +18,7 @@ const EducationHistory: React.FC<EducationHistoryProps> = ({
       id={id}
       title={title}
       isOpen={isOpen}
-      form={<EducationForm />}
+      formComponent={EducationForm }
       btnTitle="Add Education"
     />
   );
