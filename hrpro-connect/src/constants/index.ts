@@ -85634,3 +85634,30 @@ export const CountryWithCities:CountryData = {
     "Victoria Falls"
   ]
 }
+
+export const jobTrackerStages = [
+    {
+        id:"applied",
+        label:"APPLIED",
+        
+    },
+    {
+        id:"cvreview",
+        label:"CV REVIEW",
+        
+    },
+    {
+        id:"accepted",
+        label:"ACCEPTANCE",
+        
+    },
+    {
+        id:"rejected",
+        label:"REJECTION",
+        
+    }
+]
+
+
+
+  

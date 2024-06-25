@@ -5,3 +5,4 @@ export const RecruiterAppBarMenu = [
     {id:"postJob",label:"Post Job"},
     {id:"jobTracker",label:"Job Tracker"},
 ]
+
