@@ -7,7 +7,11 @@ interface DynamicFormContainerProps {
   id: string;
   title: string;
   btnTitle: string;
-  form: ReactNode;
+  formComponent: React.FC<{ index: number; removeForm: (index: number) => void }>;
+}
+
+interface Form {
+  id: number;
 }
 
 const DynamicFormContainer: React.FC<DynamicFormContainerProps> = ({
@@ -15,16 +19,19 @@ const DynamicFormContainer: React.FC<DynamicFormContainerProps> = ({
   id,
   title,
   btnTitle,
-  form,
+  formComponent: FormComponent,
 }) => {
-  const [forms, setForms] = useState<number[]>([1]);
+  const [forms, setForms] = useState<Form[]>([{ id: 1 }]);
+
   const addForm = () => {
-    setForms([...forms, forms.length]);
+    const newForm: Form = { id: Date.now() }; 
+    setForms([...forms, newForm]);
   };
 
-  const removeForm = (index: number) => {
-    setForms(forms.filter((_, i) => i !== index));
+  const removeForm = (id: number) => {
+    setForms(forms.filter((form) => form.id !== id));
   };
+  console.log(forms);
   return (
     <div className="w-full py-1 px-5 rounded-md border">
       <div className="flex justify-between items-center my-2">
@@ -41,7 +48,9 @@ const DynamicFormContainer: React.FC<DynamicFormContainerProps> = ({
         )}
       </div>{" "}
       <div className={`${isOpen === id ? "grid gap-2" : "hidden"}`}>
-        {forms.map((count) => form)}
+        {forms.map((form) => (
+          <FormComponent key={form.id} index={form.id} removeForm={removeForm} />
+        ))}
         <button className="custom-button-outlined" onClick={addForm}>
           {btnTitle}
         </button>
@@ -51,3 +60,6 @@ const DynamicFormContainer: React.FC<DynamicFormContainerProps> = ({
 };
 
 export default DynamicFormContainer;
+
+
+

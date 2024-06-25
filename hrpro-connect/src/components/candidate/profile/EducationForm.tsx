@@ -6,6 +6,12 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Dropdown from "../../common/base/Dropdown";
 import { EmploymentType } from "@/constants";
 
+interface EducationExpFormProps {
+  index: number;
+  removeForm: (index: number) => void;
+  
+}
+
 export interface EducationFormValues {
   institutionName: string;
   degree: string;
@@ -16,7 +22,7 @@ export interface EducationFormValues {
   learningDescription: string;
 }
 
-const EducationForm = () => {
+const EducationForm: React.FC<EducationExpFormProps> = ({index, removeForm }) => {
   const [collapse, setCollapse] = useState(false);
   const {
     register,
@@ -37,6 +43,17 @@ const EducationForm = () => {
           <p className="text-lg">Workexp1</p>
           <div>
             {!collapse && (
+              <>
+              <button
+                className="text-sm text-primary hover:bg-rose-50 rounded-md p-2 mx-2"
+                type="button" 
+                onClick={() => {
+                  console.log(index)
+                   removeForm(index)}
+                  }
+              >
+                Remove 
+              </button>
               <button
                 className="text-sm text-primary hover:bg-rose-50 rounded-md p-2 mx-2"
                 type="submit"
@@ -44,6 +61,8 @@ const EducationForm = () => {
                 <SaveFilled className="mx-1" />
                 Save
               </button>
+              </>
+              
             )}
 
             <DownOutlined onClick={() => setCollapse(!collapse)} />

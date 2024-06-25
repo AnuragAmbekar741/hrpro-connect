@@ -6,7 +6,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Dropdown from "../../common/base/Dropdown";
 import { EmploymentType } from "@/constants";
 
-interface WorkExpFormProps {}
+interface WorkExpFormProps {
+  index: number;
+  removeForm: (index: number) => void;
+  
+}
 
 export interface WorkExpFormValues {
   companyName: string;
@@ -20,7 +24,7 @@ export interface WorkExpFormValues {
   dutiesAndResponsiblities: string;
 }
 
-const WorkExpForm: React.FC = () => {
+const WorkExpForm: React.FC<WorkExpFormProps> = ({index, removeForm }) => {
   const [collapse, setCollapse] = useState(false);
   const {
     register,
@@ -30,7 +34,7 @@ const WorkExpForm: React.FC = () => {
   } = useForm<WorkExpFormValues>();
   const onSubmit = (data: WorkExpFormValues) => console.log(data);
   const getOptionLabel = (option: any): string => option.label;
-
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="w-full grid border p-2 rounded-md bg-gray-50">
@@ -42,6 +46,17 @@ const WorkExpForm: React.FC = () => {
           <p className="text-lg">Workexp1</p>
           <div>
             {!collapse && (
+              <>
+              <button
+                className="text-sm text-primary hover:bg-rose-50 rounded-md p-2 mx-2" type="button"
+                onClick={() => {
+                  
+                  removeForm(index)}
+                }
+              >
+                <SaveFilled className="mx-1" />
+                Remove
+              </button>
               <button
                 className="text-sm text-primary hover:bg-rose-50 rounded-md p-2 mx-2"
                 type="submit"
@@ -49,6 +64,8 @@ const WorkExpForm: React.FC = () => {
                 <SaveFilled className="mx-1" />
                 Save
               </button>
+              </>
+              
             )}
 
             <DownOutlined onClick={() => setCollapse(!collapse)} />

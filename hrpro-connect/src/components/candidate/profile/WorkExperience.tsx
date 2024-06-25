@@ -18,7 +18,7 @@ const WorkExperience: React.FC<WorkExperienceProps> = ({
       id={id}
       title={title}
       isOpen={isOpen}
-      form={<WorkExpForm />}
+      formComponent={WorkExpForm}
       btnTitle="Add Work Experience"
     />
   );
